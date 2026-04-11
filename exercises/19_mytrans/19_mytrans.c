@@ -5,6 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
+static int is_word_char(unsigned char c) {
+  return isalpha(c) || c == '\'';
+}
+
 void to_lowercase(char *str) {
   for (; *str; ++str)
     *str = tolower((unsigned char)*str);
@@ -41,11 +45,34 @@ int main() {
         continue;
     }
 
-    // 使用 strtok 按空格分割单词
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    char *word = strtok(line, " \t");
+    while (word != NULL) {
+      char normalized[256];
+      int pos = 0;
+
+      for (int i = 0; word[i] != '\0' && pos < (int)sizeof(normalized) - 1; i++) {
+        unsigned char c = (unsigned char)word[i];
+        if (is_word_char(c)) {
+          normalized[pos++] = (char)tolower(c);
+        }
+      }
+      normalized[pos] = '\0';
+
+      if (pos > 0) {
+        const char *translation = hash_table_lookup(table, normalized);
+        printf("原文: %s\t", normalized);
+        if (translation != NULL) {
+          printf("翻译: %s\n", translation);
+        } else {
+          printf("未找到该单词的翻译。\n");
+        }
+      }
+
+      word = strtok(NULL, " \t");
+    }
   }
 
+  fclose(file);
   free_hash_table(table);
   return 0;
 }

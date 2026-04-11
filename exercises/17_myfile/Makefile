@@ -7,8 +7,11 @@ OBJS := $(SRCS:.c=.o)
 
 all: $(TARGET)
 
-# TODO: 在这里添加你的代码
-# I AM NOT DONE
+$(TARGET): 17_myfile.o
+	$(CC) $(CFLAGS) -pie -o $(TARGET) 17_myfile.o
+
+17_myfile.o: 17_myfile.c
+	$(CC) $(CFLAGS) -c 17_myfile.c -o 17_myfile.o
 
 clean:
 	rm -f $(TARGET) $(OBJS)

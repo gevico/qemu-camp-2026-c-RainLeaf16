@@ -30,16 +30,29 @@ void print_elf_type(uint16_t e_type) {
 }
 
 int __cmd_myfile(const char* filename) {
-    char filepath[256];
+    char filepath[COMMON_PATH_MAX];
     int fd;
     Elf64_Ehdr ehdr;
 
-    strcpy(filepath, filename);
-    fflush(stdout);
-    printf("filepath: %s\n", filepath);
+    resolve_workspace_path(filename, filepath, sizeof(filepath));
 
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+    fd = open(filepath, O_RDONLY);
+    if (fd < 0) {
+        perror("open");
+        return 1;
+    }
+
+    if (read(fd, &ehdr, sizeof(ehdr)) != (ssize_t)sizeof(ehdr)) {
+        perror("read");
+        close(fd);
+        return 1;
+    }
+
+    if (memcmp(ehdr.e_ident, ELFMAG, SELFMAG) != 0) {
+        printf("ELF Type: Unknown (0x0)\n");
+        close(fd);
+        return 1;
+    }
 
     print_elf_type(ehdr.e_type);
     close(fd);

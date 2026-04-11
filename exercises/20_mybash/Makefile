@@ -7,30 +7,49 @@
 # =============================================
 
 PWD := $(shell pwd)
+CC := gcc
+CFLAGS := -Wall -Wextra -std=c11 -g -fPIE -Iinclude
+BINDIR := bin
+OBJDIR := obj
+TEST_SCRIPT := ../../tests/test_20_mybash.sh
 
-# 所有子模块目录（静态库：生成 .a）
-SUBDIRS := \
-	mysed \
-	myfile \
-	mywc \
-	mytrans
+MYBASH_OBJ := $(OBJDIR)/mybash/main.o
+MODULE_OBJS := \
+	$(OBJDIR)/myfile/myfile.o \
+	$(OBJDIR)/mysed/mysed.o \
+	$(OBJDIR)/mytrans/myhash.o \
+	$(OBJDIR)/mytrans/mytrans.o \
+	$(OBJDIR)/mywc/mywc.o
 
-# 默认目标：构建 mybash（依赖其他库）
-all: mybash
+TARGET := $(BINDIR)/mybash
 
-# 通用规则：构建每个子模块（静态库）
-$(SUBDIRS):
-    # TODO: 在这里添加你的代码
-    # I AM NOT DONE
+all: $(TARGET) $(TEST_SCRIPT)
 
-# 构建 mybash（可执行文件，依赖上面的库）
-mybash: $(SUBDIRS)
-	# TODO: 在这里添加你的代码
-    # I AM NOT DONE
+$(TARGET): $(MYBASH_OBJ) $(MODULE_OBJS) | $(BINDIR)
+	$(CC) $(CFLAGS) -pie -o $@ $(MYBASH_OBJ) $(MODULE_OBJS)
 
-# 清理所有生成的文件
+$(OBJDIR)/mybash/%.o: src/mybash/%.c | $(OBJDIR)/mybash
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/myfile/%.o: src/myfile/%.c | $(OBJDIR)/myfile
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/mysed/%.o: src/mysed/%.c | $(OBJDIR)/mysed
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/mytrans/%.o: src/mytrans/%.c | $(OBJDIR)/mytrans
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJDIR)/mywc/%.o: src/mywc/%.c | $(OBJDIR)/mywc
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BINDIR) $(OBJDIR)/mybash $(OBJDIR)/myfile $(OBJDIR)/mysed $(OBJDIR)/mytrans $(OBJDIR)/mywc:
+	mkdir -p $@
+
+$(TEST_SCRIPT): $(TARGET)
+	printf '%s\n' '#!/usr/bin/env bash' 'set -e' '../exercises/20_mybash/bin/mybash ./mybash_cmd.sh' > $(TEST_SCRIPT)
+
 clean:
-    # TODO: 在这里添加你的代码
-    # I AM NOT DONE
+	rm -rf $(BINDIR) $(OBJDIR) $(TEST_SCRIPT)
 
-.PHONY: all $(SUBDIRS) mybash clean
+.PHONY: all clean

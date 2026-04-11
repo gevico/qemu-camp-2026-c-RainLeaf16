@@ -4,6 +4,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+static char *dup_string(const char *str) {
+  size_t len = strlen(str);
+  char *copy = malloc(len + 1);
+
+  if (copy != NULL) {
+    memcpy(copy, str, len + 1);
+  }
+
+  return copy;
+}
+
 // djb2 哈希函数（经典字符串哈希，分布均匀）
 unsigned long hash_function(const char *str) {
   unsigned long hash = 5381;
@@ -56,8 +67,33 @@ int hash_table_insert(HashTable *table, const char *key, const char *value) {
   unsigned long hash = hash_function(key) % HASH_TABLE_SIZE;
   HashNode *node = table->buckets[hash];
 
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+  while (node != NULL) {
+    if (strcmp(node->key, key) == 0) {
+      char *new_value = dup_string(value);
+      if (new_value == NULL) {
+        return 0;
+      }
+      free(node->value);
+      node->value = new_value;
+      return 1;
+    }
+    node = node->next;
+  }
+
+  node = malloc(sizeof(HashNode));
+  if (node == NULL) {
+    return 0;
+  }
+
+  node->key = dup_string(key);
+  node->value = dup_string(value);
+  if (node->key == NULL || node->value == NULL) {
+    free_node(node);
+    return 0;
+  }
+
+  node->next = table->buckets[hash];
+  table->buckets[hash] = node;
 
   return 1;
 }
@@ -70,8 +106,12 @@ const char *hash_table_lookup(HashTable *table, const char *key) {
   unsigned long hash = hash_function(key) % HASH_TABLE_SIZE;
   HashNode *node = table->buckets[hash];
 
-    // TODO: 在这里添加你的代码
-    // I AM NOT DONE
+  while (node != NULL) {
+    if (strcmp(node->key, key) == 0) {
+      return node->value;
+    }
+    node = node->next;
+  }
 
   return NULL; // 未找到
 }
