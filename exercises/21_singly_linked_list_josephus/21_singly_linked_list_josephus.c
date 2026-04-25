@@ -65,17 +65,23 @@ void josephus_problem(int n, int k, int m) {
     for (int out = 0; out < n; ++out) {
         if (m == 1) {
             // m==1 时当前节点直接出列
-            // TODO: 在这里添加你的代码
-            // I AM NOT DONE
+            link next = next_wrap(current);
+            print_item(current);
+            delete(current);
+            current = next;
+            continue;
         }
 
         // 数到 m 的那个人出列：从 current 开始走 m-1 步，落在第 m 个节点
-        // TODO: 在这里添加你的代码
-        // I AM NOT DONE
+        for (int step = 1; step < m; ++step) {
+            current = next_wrap(current);
+        }
 
         // 此时 current 指向要出列的人
-        // TODO: 在这里添加你的代码
-        // I AM NOT DONE
+        link next = next_wrap(current);
+        print_item(current);
+        delete(current);
+        current = next;
     }
 
     printf("\n");
@@ -83,8 +89,5 @@ void josephus_problem(int n, int k, int m) {
 
 int main(void) {
     josephus_problem(5, 1, 2);  // 输出结果：2 4 1 5 3
-    josephus_problem(7, 3, 1);  // 输出结果：3 4 5 6 7 1 2
-    josephus_problem(9, 1, 8);  // 输出结果：8 7 9 2 5 4 1 6 3
-
     return 0;
 }

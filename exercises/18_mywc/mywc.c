@@ -26,6 +26,7 @@ void add_word(WordCount **hash_table, const char *word) {
   unsigned int index = hash(word);
   WordCount *entry = hash_table[index];
 
+  // 先在当前桶的链表里查重，找到相同单词就直接累加次数。
   while (entry != NULL) {
     if (strcmp(entry->word, word) == 0) {
       entry->count++;
@@ -89,10 +90,12 @@ void process_file(const char *filename) {
 
   while ((c = fgetc(file)) != EOF) {
     if (is_valid_word_char(c)) {
+      // 连续读到合法字符时，就把它们拼进当前单词。
       if (word_pos < MAX_WORD_LEN - 1) {
         word[word_pos++] = to_lower(c);
       }
     } else {
+      // 一旦遇到分隔符，说明前一个单词已经完整，可以入表统计了。
       if (word_pos > 0) {
         word[word_pos] = '\0';
         add_word(hash_table, word);

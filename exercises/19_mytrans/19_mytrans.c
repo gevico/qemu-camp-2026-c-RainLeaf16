@@ -50,6 +50,7 @@ int main() {
       char normalized[256];
       int pos = 0;
 
+      // 查词前先做“归一化”：去掉标点，只保留字母/单引号并统一转小写。
       for (int i = 0; word[i] != '\0' && pos < (int)sizeof(normalized) - 1; i++) {
         unsigned char c = (unsigned char)word[i];
         if (is_word_char(c)) {

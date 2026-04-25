@@ -48,6 +48,7 @@ int __cmd_myfile(const char* filename) {
         return 1;
     }
 
+    // ELF 文件开头有固定魔数，先借它判断当前文件是不是 ELF。
     if (memcmp(ehdr.e_ident, ELFMAG, SELFMAG) != 0) {
         printf("ELF Type: Unknown (0x0)\n");
         close(fd);

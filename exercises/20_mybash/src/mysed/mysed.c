@@ -35,6 +35,7 @@ int parse_replace_command(const char* cmd, char** old_str, char** new_str) {
     old_len = (size_t)(old_end - old_start);
     new_len = (size_t)(new_end - (old_end + 1));
 
+    // 这两个字符串要在函数返回后继续使用，所以动态分配更安全。
     *old_str = malloc(old_len + 1);
     *new_str = malloc(new_len + 1);
     if (*old_str == NULL || *new_str == NULL) {
@@ -69,6 +70,7 @@ void replace_first_occurrence(char* str, const char* old, const char* new) {
     }
 
     prefix_len = (size_t)(pos - str);
+    // 重新拼接出“前缀 + 新串 + 后缀”，实现第一次匹配的替换。
     snprintf(buffer, sizeof(buffer), "%.*s%s%s",
              (int)prefix_len, str, new, pos + strlen(old));
     strncpy(str, buffer, 1023);

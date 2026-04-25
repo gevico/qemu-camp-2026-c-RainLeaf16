@@ -102,6 +102,7 @@ int parse_input(char *input, char **args) {
       char c = *buf;
 
       if (c == '"') {
+          // 引号里的空格属于参数本身，不应该再切开。
           in_quotes = !in_quotes;
       } else if (!in_quotes && (c == ' ' || c == '\t')) {
           if (arg_buf_idx > 0) {
@@ -178,6 +179,7 @@ int main(int argc, char *argv[]) {
       printf("cmd_arg2: %s\n", cmd_arg2);
 
       int found = 0;
+      // 根据命令名在命令表中查找，并按参数个数调用对应函数指针。
       for (Command *cmd = commands; cmd->name != NULL; cmd++) {
         if (strcmp(cmd_name, cmd->name) == 0) {
           found = 1;
@@ -231,6 +233,7 @@ int main(int argc, char *argv[]) {
       const char *cmd_arg2 = (argc >= 3) ? args[2] : NULL;
 
       int found = 0;
+      // 交互模式复用和脚本模式相同的命令分发逻辑。
       for (Command *cmd = commands; cmd->name != NULL; cmd++) {
         if (strcmp(cmd_name, cmd->name) == 0) {
           found = 1;

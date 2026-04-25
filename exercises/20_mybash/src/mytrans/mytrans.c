@@ -10,6 +10,7 @@ void trim(char *str) {
     char *start = str;
     size_t len;
 
+    // 先去掉行首空白。
     while (isspace((unsigned char)*start)) {
         start++;
     }
@@ -19,6 +20,7 @@ void trim(char *str) {
     }
 
     len = strlen(str);
+    // 再去掉行尾空白，方便按固定格式解析词典。
     while (len > 0 && isspace((unsigned char)str[len - 1])) {
         str[--len] = '\0';
     }
@@ -46,6 +48,7 @@ int load_dictionary(const char *filename, HashTable *table,
     }
 
     if (line[0] == '#') {
+      // 遇到新词条标题前，先把上一条完整词条写入哈希表。
       if (in_entry && current_word[0] != '\0' && current_translation[0] != '\0') {
         if (!hash_table_insert(table, current_word, current_translation)) {
           fclose(file);
@@ -139,6 +142,7 @@ int __cmd_mytrans(const char* filename) {
       char normalized[256];
       int pos = 0;
 
+      // 查词前统一转成“小写纯单词”，避免标点影响查找。
       for (int i = 0; word[i] != '\0' && pos < (int)sizeof(normalized) - 1; i++) {
         unsigned char c = (unsigned char)word[i];
         if (isalpha(c) || c == '\'') {

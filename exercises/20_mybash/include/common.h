@@ -33,6 +33,7 @@ static inline void get_project_root(char *output, size_t size) {
 
     marker = strstr(cwd, "/exercises/20_mybash");
     if (marker != NULL) {
+        // 手动运行和测试运行的工作目录不同，这里统一截到项目根目录。
         marker += strlen("/exercises/20_mybash");
         *marker = '\0';
         snprintf(output, size, "%s", cwd);
@@ -59,6 +60,7 @@ static inline void resolve_workspace_path(const char *input, char *output, size_
     if (strncmp(input, prefix, prefix_len) == 0) {
         char root[COMMON_PATH_MAX];
 
+        // 把测试脚本里的 /workspace/... 路径映射到本地真实仓库路径。
         get_project_root(root, sizeof(root));
         snprintf(output, size, "%s%s", root, input + prefix_len);
         return;

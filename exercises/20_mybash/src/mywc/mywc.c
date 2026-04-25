@@ -26,6 +26,7 @@ void add_word(WordCount **hash_table, const char *word) {
   unsigned int index = hash(word);
   WordCount *entry = hash_table[index];
 
+  // 同一个桶里可能串着多个节点，先找旧单词再决定是否新建节点。
   while (entry != NULL) {
     if (strcmp(entry->word, word) == 0) {
       entry->count++;
@@ -88,10 +89,12 @@ void process_file(const char *filename) {
 
   while ((c = fgetc(file)) != EOF) {
     if (is_valid_word_char(c)) {
+      // 连续的字母会拼成同一个单词。
       if (word_pos < MAX_WORD_LEN - 1) {
         word[word_pos++] = to_lower(c);
       }
     } else {
+      // 碰到分隔符就把当前单词提交到哈希表。
       if (word_pos > 0) {
         word[word_pos] = '\0';
         add_word(hash_table, word);
